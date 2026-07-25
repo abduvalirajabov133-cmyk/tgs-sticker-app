@@ -7,6 +7,8 @@ import { PaymentModal } from './components/PaymentModal';
 import type { StickerTemplate, CustomizationState } from './types';
 import { ShoppingBag, Download, Layers } from 'lucide-react';
 
+const API_BASE_URL = 'https://odobli-ai-bot.onrender.com';
+
 const MOCK_TEMPLATES: StickerTemplate[] = [
   {
     id: 'flag',
@@ -63,14 +65,14 @@ export const App: React.FC = () => {
   });
 
   useEffect(() => {
-    fetch('http://localhost:8000/api/templates')
+    fetch(`${API_BASE_URL}/api/templates`)
       .then(res => res.json())
       .then(data => {
         if (data.templates && data.templates.length > 0) {
           setTemplates(data.templates);
         }
       })
-      .catch(err => console.log('Using static fallback templates:', err));
+      .catch(err => console.log('Using fallback templates:', err));
   }, []);
 
   useEffect(() => {
@@ -78,7 +80,7 @@ export const App: React.FC = () => {
 
     setIsLoadingPreview(true);
 
-    fetch('http://localhost:8000/api/preview', {
+    fetch(`${API_BASE_URL}/api/preview`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -109,7 +111,7 @@ export const App: React.FC = () => {
 
   const handleDownloadDirect = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/generate', {
+      const response = await fetch(`${API_BASE_URL}/api/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
