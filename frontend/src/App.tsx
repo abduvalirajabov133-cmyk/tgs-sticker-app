@@ -5,6 +5,8 @@ import { LottieCanvas } from './components/LottieCanvas';
 import { CustomizerPanel } from './components/CustomizerPanel';
 import { PaymentModal } from './components/PaymentModal';
 import type { StickerTemplate, CustomizationState } from './types';
+import { getClientTemplatePreview } from './utils/lottieClientEngine';
+import { MASTER_TEMPLATES } from './utils/templatesData';
 import { ShoppingBag, Layers } from 'lucide-react';
 
 const API_BASE_URL = 'https://odobli-ai-bot.onrender.com';
@@ -54,7 +56,9 @@ const MOCK_TEMPLATES: StickerTemplate[] = [
 export const App: React.FC = () => {
   const [templates, setTemplates] = useState<StickerTemplate[]>(MOCK_TEMPLATES);
   const [selectedTemplate, setSelectedTemplate] = useState<StickerTemplate>(MOCK_TEMPLATES[0]);
-  const [lottiePreviewData, setLottiePreviewData] = useState<any>(null);
+  
+  // Instant initial preview from embedded master Lottie JSON templates
+  const [lottiePreviewData, setLottiePreviewData] = useState<any>(MASTER_TEMPLATES['flag']);
   const [isLoadingPreview, setIsLoadingPreview] = useState<boolean>(false);
   const [showPaymentModal, setShowPaymentModal] = useState<boolean>(false);
 
@@ -72,12 +76,18 @@ export const App: React.FC = () => {
           setTemplates(data.templates);
         }
       })
-      .catch(err => console.log('Using fallback templates:', err));
+      .catch(err => console.log('Using static fallback templates:', err));
   }, []);
 
+  // Update preview instantly on client side, then sync with server API
   useEffect(() => {
     if (!selectedTemplate) return;
 
+    // 1. Instant client-side fallback preview (0-millisecond delay!)
+    const clientPreview = getClientTemplatePreview(selectedTemplate.id, customization.text || selectedTemplate.default_text);
+    setLottiePreviewData(clientPreview);
+
+    // 2. Fetch server API for dynamic custom text preview if available
     setIsLoadingPreview(true);
 
     fetch(`${API_BASE_URL}/api/preview`, {
@@ -92,11 +102,13 @@ export const App: React.FC = () => {
     })
       .then(res => res.json())
       .then(data => {
-        setLottiePreviewData(data);
+        if (data && (data.v || data.layers)) {
+          setLottiePreviewData(data);
+        }
         setIsLoadingPreview(false);
       })
       .catch(err => {
-        console.error('Preview error:', err);
+        console.log('Server preview error, keeping instant client preview:', err);
         setIsLoadingPreview(false);
       });
   }, [selectedTemplate, customization]);
@@ -107,6 +119,10 @@ export const App: React.FC = () => {
       ...prev,
       text: template.default_text
     }));
+    // Update instant preview right away
+    if (MASTER_TEMPLATES[template.id]) {
+      setLottiePreviewData(MASTER_TEMPLATES[template.id]);
+    }
   };
 
   return (
