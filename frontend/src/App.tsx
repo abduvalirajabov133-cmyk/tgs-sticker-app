@@ -5,7 +5,7 @@ import { LottieCanvas } from './components/LottieCanvas';
 import { CustomizerPanel } from './components/CustomizerPanel';
 import { PaymentModal } from './components/PaymentModal';
 import type { StickerTemplate, CustomizationState } from './types';
-import { ShoppingBag, Download, Layers } from 'lucide-react';
+import { ShoppingBag, Layers } from 'lucide-react';
 
 const API_BASE_URL = 'https://odobli-ai-bot.onrender.com';
 
@@ -109,32 +109,6 @@ export const App: React.FC = () => {
     }));
   };
 
-  const handleDownloadDirect = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          template_id: selectedTemplate.id,
-          text: customization.text || selectedTemplate.default_text,
-          font_type: customization.fontType,
-          color_hex: customization.colorHex
-        })
-      });
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${selectedTemplate.id}_${customization.text || 'sticker'}.tgs`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-    } catch (err) {
-      alert('TGS faylini yuklab olishda xatolik: ' + err);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#090d16] text-slate-100 flex flex-col">
       <Header />
@@ -150,7 +124,7 @@ export const App: React.FC = () => {
                 O'zingizning Telegram Stikeringizni Yaratasiz
               </h2>
               <p className="text-xs text-slate-400 mt-1 max-w-md">
-                Tayyor shablonni tanlang, ismingizni kiriting va jonli stikerni saqlab oling!
+                Tayyor shablonni tanlang, ismingizni kiriting va stikeringizga buyurtma bering!
               </p>
             </div>
           </div>
@@ -183,20 +157,11 @@ export const App: React.FC = () => {
         <div className="max-w-2xl mx-auto flex items-center gap-3">
           <button
             type="button"
-            onClick={handleDownloadDirect}
-            className="flex-1 py-3 px-4 rounded-2xl font-bold text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 transition-all flex items-center justify-center gap-2 border border-slate-700 active:scale-98"
-          >
-            <Download className="w-4 h-4 text-cyan-400" />
-            <span>.tgs Fayl Yuklash</span>
-          </button>
-
-          <button
-            type="button"
             onClick={() => setShowPaymentModal(true)}
-            className="flex-1 py-3 px-4 rounded-2xl font-extrabold text-xs bg-gradient-to-r from-cyan-500 via-indigo-500 to-pink-500 text-white hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-cyan-500/25 active:scale-98"
+            className="w-full py-3.5 px-4 rounded-2xl font-extrabold text-sm bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500 text-slate-950 hover:brightness-110 transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/25 active:scale-98"
           >
             <ShoppingBag className="w-4 h-4" />
-            <span>Sotib Olish ({selectedTemplate?.price_stars || 15} ⭐)</span>
+            <span>Buyurtma Berish va Sotib Olish ({(selectedTemplate?.price_uzs || 10000).toLocaleString()} so'm)</span>
           </button>
         </div>
       </footer>
@@ -206,10 +171,6 @@ export const App: React.FC = () => {
           template={selectedTemplate}
           customization={customization}
           onClose={() => setShowPaymentModal(false)}
-          onDownloadDirect={() => {
-            setShowPaymentModal(false);
-            handleDownloadDirect();
-          }}
         />
       )}
     </div>

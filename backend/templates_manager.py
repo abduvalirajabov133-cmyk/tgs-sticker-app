@@ -6,7 +6,6 @@ TEMPLATES_CATALOG: List[Dict] = [
         "title": "To'lqinlanuvchi Bayroq Stiker",
         "description": "Yorqin ranglar va to'lqinlanuvchi harakatli bayroq stikeri. Ismingiz yoki brendingiz uchun ideal.",
         "category": "Bayroqlar",
-        "price_stars": 15,
         "price_uzs": 10000,
         "badge": "Popular",
         "icon": "🚩",
@@ -19,7 +18,6 @@ TEMPLATES_CATALOG: List[Dict] = [
         "title": "Urib turuvchi Yurak Stiker",
         "description": "Nurlanuvchi va urib turuvchi 3D romantik yurak stikeri. Husnixat va shrift bilan kiritish.",
         "category": "Sevgi",
-        "price_stars": 15,
         "price_uzs": 10000,
         "badge": "Trending",
         "icon": "💖",
@@ -32,7 +30,6 @@ TEMPLATES_CATALOG: List[Dict] = [
         "title": "Instagram Profil Stiker",
         "description": "Rasmiy Instagram logotipi va animatsiyali profilingiz username stikeri.",
         "category": "Social",
-        "price_stars": 10,
         "price_uzs": 8000,
         "badge": "Hot",
         "icon": "📸",
@@ -41,6 +38,9 @@ TEMPLATES_CATALOG: List[Dict] = [
         "supported_fields": ["text", "font", "color"]
     }
 ]
+
+CARD_NUMBER = "8600 0000 0000 0000" # Card number for user payments
+CARD_HOLDER = "ABDUVALI R."
 
 def get_all_templates():
     return TEMPLATES_CATALOG
