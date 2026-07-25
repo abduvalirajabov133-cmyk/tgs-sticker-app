@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: tgs-sticker-api
+    env: python
+    region: singapore
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: BOT_TOKEN
+        value: 8929381759:AAFf20dPeWlA7WYrr3PpSNgUldU02fJL31c
+      - key: ADMIN_ID
+        value: "8544023815"
+      - key: WEBAPP_URL
+        value: https://tgs-sticker-app.vercel.app
+
+  - type: worker
+    name: tgs-sticker-bot
+    env: python
+    region: singapore
+    buildCommand: "cd backend && pip install -r requirements.txt"
+    startCommand: "cd backend && python bot.py"
+    envVars:
+      - key: BOT_TOKEN
+        value: 8929381759:AAFf20dPeWlA7WYrr3PpSNgUldU02fJL31c
+      - key: ADMIN_ID
+        value: "8544023815"
+      - key: WEBAPP_URL
+        value: https://tgs-sticker-app.vercel.app
